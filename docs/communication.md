@@ -62,10 +62,10 @@ Channels:
 Joining a game:
 ```
 ledgame_player: { msg: REQUEST_JOIN }
-ledgame_server: { msg: JOIN_SUCCESS, success: true, player: 1 }
+ledgame_server: { msg: JOIN_SUCCESS, player: 1 }
 
 ledgame_player: { msg: REQUEST_JOIN }
-ledgame_server: { msg: JOIN_FAIL, success: false }
+ledgame_server: { msg: JOIN_FAIL }
 ```
 
 After this transaction takes place, the player/server will use player-specific channels to
@@ -90,13 +90,15 @@ Selecting a player for a turn:
 ```
 ledgame_server1: { msg: REQUEST_TURN }
 ledgame_player1: { msg: ACK }
+
+ledgame_server2: { msg: WAIT_YOUR_TURN }
+ledgame_player2: { msg: ACK }
 ```
 
 Sending commands to the server when it is your turn:
 ```
 ledgame_player1: { msg: MOVE_CUR_LEFT }
 ledgame_server1: { msg: ACK }
-
 
 ledgame_player1: { msg: MOVE_CUR_RIGHT }
 ledgame_server1: { msg: ACK }
