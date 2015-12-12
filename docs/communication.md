@@ -48,8 +48,81 @@ with additional information, or with a simple "acknowledged" message.
 
 ## Messages
 
-### Game
+JSON will be used to send messages back and forth. Once a player has received their player number,
+they will use a player-specific channel to communicate with the server.
+
+Channels:
+* ledgame_server
+* ledgame_player
+* ledgame_player1
+* ledgame_player2
+* ledgame_server_player1
+* ledgame_server_player2
+
+Joining a game:
+```
+ledgame_player: { msg: REQUEST_JOIN }
+ledgame_server: { msg: JOIN_SUCCESS, success: true, player: 1 }
+
+ledgame_player: { msg: REQUEST_JOIN }
+ledgame_server: { msg: JOIN_FAIL, success: false }
+```
+
+After this transaction takes place, the player/server will use player-specific channels to
+communicate.
+
+Sending a "player ready" message:
+```
+ledgame_player1: { msg: PLAYER_READY }
+ledgame_server1: { msg: ACK }
+```
+
+Starting the game:
+```
+ledgame_server1: { msg: START_GAME, color: red }
+ledgame_player1: { msg: ACK }
+
+ledgame_server1: { msg: START_GAME, color: green }
+ledgame_player1: { msg: ACK }
+```
+
+Selecting a player for a turn:
+```
+ledgame_server1: { msg: REQUEST_TURN }
+ledgame_player1: { msg: ACK }
+```
+
+Sending commands to the server when it is your turn:
+```
+ledgame_player1: { msg: MOVE_CUR_LEFT }
+ledgame_server1: { msg: ACK }
 
 
-### Client
+ledgame_player1: { msg: MOVE_CUR_RIGHT }
+ledgame_server1: { msg: ACK }
 
+ledgame_player1: { msg: DROP }
+ledgame_server1: { msg: ACK }
+```
+
+Once a DROP message has been sent, a player's term ends. After the drop has been processed, the
+server will either request the other player's turn, or send out "game over" messages to each player
+if the game has been one.
+
+Game Over message:
+```
+ledgame_server1: { msg: GAME_OVER, reason: WIN }
+ledgame_player1: { msg: ACK }
+
+ledgame_server1: { msg: GAME_OVER, reason: LOSE }
+ledgame_player1: { msg: ACK }
+
+ledgame_server1: { msg: GAME_OVER, reason: PLAYER_LEFT }
+ledgame_player1: { msg: ACK }
+```
+
+A player can leave the game at any time:
+```
+ledgame_player1: { msg: LEAVE_GAME }
+ledgame_server1: { msg: ACK }
+```
