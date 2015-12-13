@@ -7,6 +7,7 @@ var fs      = require('fs');
 var express = require('express');
 
 var app = express();
+app.use(express.static('public', { index: false })); // serve public directory; don't auto-serve index.html
 
 app.get('/', function (req, res) {
    fs.readFile('html/controller.html', function (err, data) {
