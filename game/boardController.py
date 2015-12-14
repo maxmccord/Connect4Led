@@ -14,7 +14,7 @@ LED_GREEN = 1
 LED_RED = 2
 LED_ORANGE = 3
 
-REFRESH_RATE = 0.000005
+REFRESH_RATE = 0.00001
 
 class ledMatrix(object):
     def __init__(self):
@@ -29,37 +29,38 @@ class ledMatrix(object):
         GPIO.setup(N_LATCHPIN, GPIO.OUT)
         GPIO.setup(N_CLOCKPIN, GPIO.OUT)
 
-        self.dataArray = [[LED_GREEN for i in range(5)] for j in range(8)]
+        # self.dataArray = [[LED_GREEN for i in range(5)] for j in range(8)]
         
-        # self.dataArray = [ 
-        #                [3,2,1,2,1],
-        #                [2,1,2,1,2],
-        #                [1,2,1,2,1],
-        #                [2,1,2,1,2],
-        #                [1,2,1,2,1],
-        #                [2,1,2,1,2],
-        #                [1,2,1,2,1],
-        #                [2,1,2,1,2]
-        #                ]
+        self.dataArray = [ 
+                       [3,2,1,2,3],
+                       [2,1,2,1,2],
+                       [1,2,1,2,1],
+                       [2,1,2,1,2],
+                       [1,2,1,2,1],
+                       [2,1,2,1,2],
+                       [1,2,1,2,1],
+                       [3,1,2,1,3]
+                       ]
 
         self.N_GREEN_PINS = [8,6,4,2,0]
         self.N_RED_PINS = [9,7,5,3,1]
+        self.update = True
 
-    def updateDisplay(self, interval, iterations, col=0):
-        if (col > 4): col = 0
-        if iterations != 0:
-            threading.Timer (
-              interval,
-              self.updateDisplay, [interval, iterations-1, col+1]
-            ).start ()
+    def updateDisplay(self, interval, col=0):
+        self.updateColumn(col)
+        col = col+1 if col < 4 else 0
 
-            self.updateColumn(col)
+        t = threading.Timer (
+          interval,
+          self.updateDisplay, [interval, col]
+        ).start ()
 
     def dropPiece(self, i):
         self.dataArray[0][i] = LED_GREEN
 
     def updateColumn(self, col):
-        # for j in range(5):
+        # for col in range(5):
+        self.update = False
         P_dataOutGreen = 0
         P_dataOutRed = 0
         N_dataOut = 0
@@ -98,9 +99,7 @@ class ledMatrix(object):
         GPIO.output(N_LATCHPIN, 0)
         self.shiftOut(N_DATAPIN, N_CLOCKPIN, ~(N_dataOut >> 8))
         self.shiftOut(N_DATAPIN, N_CLOCKPIN, ~N_dataOut)
-        GPIO.output(N_LATCHPIN, 1)
-
-        # time.sleep(REFRESH_RATE)      
+        GPIO.output(N_LATCHPIN, 1)  
 
     def clearMatrix(self):
         self.dataArray = [[LED_OFF for i in range(5)] for j in range(8)]
@@ -127,9 +126,10 @@ class ledMatrix(object):
 def main():
     matrix = ledMatrix()
 
-    matrix.updateDisplay(REFRESH_RATE, -1)
-    while (1):
-        pass
+    matrix.updateDisplay(REFRESH_RATE)
+    # while (1):
+    #     # matrix.updateColumn()
+    #     pass
 
 if __name__ == "__main__":
     main()
