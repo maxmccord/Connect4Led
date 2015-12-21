@@ -1,24 +1,28 @@
-import threading
+# def do_every (interval, worker_func, iterations, t):
+#     if iterations != 0:
+#         threading.Timer (
+#             interval,
+#             do_every, [interval, worker_func, iterations-1, datetime.now()]
+#         ).start ()
 
-def do_every (interval, worker_func, iterations):
-    if iterations != 0:
-        threading.Timer (
-            interval,
-            do_every, [interval, worker_func, iterations-1]
-        ).start ()
+#         worker_func(t)
 
-        worker_func ()
+# def print_hw ():
+#     print "hello"
 
-def print_hw ():
-    print "hello world"
+# t = threading.Timer(1, print_hw)
 
-def print_so ():
-    print "test = " , test
-    c = 0
-    for i in range(10000):
-        c = i
-    print c
+# t.start()
 
+a = []
+a.append([1,2])
+a.append([2,2])
+a.append([3,2])
+a.append([4,2])
 
-# call print_so every second, 5 times total
-do_every (0.0001, print_so, 3)
+print a
+
+a.pop()
+a.pop()
+
+print a
